@@ -218,3 +218,101 @@ for i in arr{
 1. **每个值都有一个所有者（owner）**
 2. **同一时间只能有一个所有者**
 3. **当所有者离开作用域时，值将被丢弃（dropped）**
+
+##   内存方面
+
+stack frame    heap
+
+rust 为在调用函数时为函数创建一个 stackframe。在调用结束后 回收stackFrame。数据也就消失了。
+
+所有权转移，同一时间只有一个变量拥有所有权。可以使用clone,这就相当于使用了克隆，复制了一份数据。 在heap中有两份值
+
+i32这种类型实现了 copy trail。 在let o：i32 = 1；
+
+​							 let p = o；
+
+这时stack frame中有两个 1的值。
+
+
+
+
+
+
+
+## 引用
+
+&变量
+
+![image-20250626204840635](rust.assets/image-20250626204840635.png)
+
+
+
+
+
+## 借用检查器
+
+r 读取
+
+w 修改
+
+o 所有权
+
+
+
+num所拥有o的权限是对 v[2]这个地址的权限， 他并不能转移和释放。
+
+v失去了w的权限，是因为不可变引用不能和可变引用同时存在?   
+
+![image-20250628223525562](rust.assets/image-20250628223525562.png)
+
+引用可以临时移除这些权限
+
+## 解引用
+
+*变量
+
+变量.fn()  会隐士解引用
+
+
+
+## slice
+
+```rust
+let s = String::from("hello world");
+
+let hello:&str = &s[0..5];
+```
+
+
+
+# struct
+
+```rust
+struct people {
+    name:String,
+    age:u32,
+    gender:u8,
+}
+  let p1 = people{name:"John".to_string(),age:20,gender:0};
+```
+
+
+
+```rust
+fn new_people(name:&str, age:u32,gender:u8)->People{
+  People{
+      name:name.to_string(),
+      age,   参数和接受参数名字相同可以不写
+      gender,
+    }
+}
+```
+
+
+
+## tuple struct
+
+```rust
+struct color(i8, i8, i8);
+没有字段名字
+```
