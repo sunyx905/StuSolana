@@ -277,6 +277,14 @@ v失去了w的权限，是因为不可变引用不能和可变引用同时存在
 
 ## slice
 
+&str 1.代表字面量 存储在 静态存储区  生命周期跟随整个程序
+
+2.代表string的切片。
+
+直接引用&String也会隐式转换成&str类型。 切片就显示的转换了。
+
+函数的接受参数是&str类型，可以接受字面量和切片。
+
 ```rust
 let s = String::from("hello world");
 
@@ -313,6 +321,320 @@ fn new_people(name:&str, age:u32,gender:u8)->People{
 ## tuple struct
 
 ```rust
-struct color(i8, i8, i8);
-没有字段名字
+struct point(f32,f32);
+  
+ 
+ let home = point(0.0, 0.0);
+```
+
+
+
+## 自定义struct如何直接打印
+
+```rust
+#[derive(Debug)]                    实现trait 相当于接口吧
+struct point {x:i32,y:i32}
+
+fn main() {
+ 
+ let p = point {x:0,y:0};
+ 
+ println!("point is {:#?}",p);
+}
+```
+
+
+
+## 定义方法
+
+```rust
+struct Point {x:i32,y:i32}
+
+impl Point {
+ 
+ fn area(&self)->i32{   &self 调用者本身的引用
+  self.x*self.y
+ }
+ 
+}
+
+let p = Point { x:2,y:5};
+ let res = p.area();        
+```
+
+
+
+## 实现copy clone trait
+
+```rust
+#[derive(Debug,Copy, Clone)]
+struct Point {x:i32,y:i32}
+
+实现后， &self  还是self。 都会执行copy操作。像i32那样。 而不会移动所有权
+```
+
+
+
+## 静态方法
+
+```rust
+ fn square(i:i32)->Self{
+  Self{x:i,y:i}
+ }
+}
+fn main() {
+ let mut p = Point::square(1);
+}
+```
+
+# 枚举
+
+枚举可以绑定值
+
+(指定值的类型)
+
+枚举可以有方法
+
+```rust
+enum Msg{
+ Quit,
+ Write(String),
+ Move{x:i32,y:i32},
+ add(i32,i32),
+}
+
+impl Msg{
+ fn call(&self){
+  
+ }
+}
+fn main() {
+ let m1 = Msg::add(),
+}
+```
+
+
+
+枚举option<T>{
+
+none,
+
+some(T)
+
+}
+
+
+
+处理null的情况
+
+# match
+
+必须考虑所有结果
+
+多种选择时可以使用
+
+```rust
+match res {
+ IpAdd::v4=>{
+  //可以是值
+  //可以是一个函数
+  println!("v4");
+ },
+ default=>{
+  println!("其他默认情况");
+ }
+}
+```
+
+
+
+
+
+```rust
+enum IpAdd{
+ v4,
+ v6(i32)
+}
+fn main() {
+ 
+ let i1 = IpAdd::v6(10);
+ 
+ te(i1);
+ 
+ fn te(res:IpAdd){
+  match res {
+   IpAdd::v4=>{
+    //可以是值
+    //可以是一个函数
+    println!("v4");
+   },
+   IpAdd::v6(i32)=>{
+    println!("v6")
+   }
+  }
+  
+ }
+}
+```
+
+
+
+# if let
+
+匹配一种情况
+
+```rust
+fn main() {
+ 
+ let num1:Option<u16> = Some(3u16);
+ 
+ if let Some(m) = num1 {
+    println!("{}",m)
+ }
+ else { println!("None"); }
+}
+```
+
+
+
+# 项目架构
+
+| 特性             | Binary Crate    | Library Crate         |
+| :--------------- | :-------------- | :-------------------- |
+| **入口函数**     | 必须有 `main()` | 无 `main()`           |
+| **输出类型**     | 可执行文件      | `.rlib` 库文件        |
+| **主要用途**     | 直接运行        | 被其他代码引用        |
+| **典型文件位置** | `src/main.rs`   | `src/lib.rs`          |
+| **依赖关系**     | 可依赖库箱      | 可被二进制/其他库依赖 |
+| **Cargo 命令**   | `cargo run`     | `cargo build`         |
+| **发布目的**     | 终端用户        | 开发者                |
+
+
+
+## module
+
+创建 
+
+1.lib.rs
+
+​	mod modules
+
+2.modules.ra
+
+​	mod yesNo===从modules文件夹下去找mod/
+
+3.moudules文件夹
+
+​	4.mod yesNo
+
+
+
+### 引入本地mod
+
+模块被pub修饰 。  逐级都要修饰
+
+struct的字段也要被pub修饰，外部才能修改
+
+```rust
+use h1::modules::enums::YesNo;
+```
+
+
+
+引入了相同的库
+
+![image-20250703113939444](rust.assets/image-20250703113939444.png)
+
+
+
+引入多个库
+
+```rust
+use h3::modules::{enums,pep};
+
+use h3::modules::*; 全部
+```
+
+
+
+
+
+# 常见集合
+
+## vector<T>
+
+单一数据结构存储多个值
+
+在内存中连续存储
+
+
+
+```rust
+let v = vec![1,2,3];
+let mut v1:Vec<i32>= Vec::new();
+   
+   v1.push(1);
+   v1.push(2);
+   v1.push(3);
+   
+   let n1: Option<&i32>= v1.get(0); //返回的是option<$i32>
+   let n2:&i32 = &v1[0];                //&i32
+   
+   for n_ref in &v1 {    // n_ref得到的是 &v1[0,1,2] 索引的引用
+       let n = *n_ref+1;  // *n_ref解引用得到值
+       println!("{}",n);
+   }
+```
+
+
+
+iter()迭代遍历循环
+
+ iter.next向后移动。返回前一个数据的引用
+
+如果iter.next向后移动两次了都是none，那就返回option none
+
+```rust
+let  mut v = vec![1,2];
+  
+  let mut iter = v.iter();
+  
+  let n0 = iter.next().unwrap();  // iter.next
+  let n1 = iter.next().unwrap();
+  let n2 = iter.next();
+  
+  println!("{:?}", n0);
+  println!("{:?}", n1);
+  println!("{:?}", n2);
+  
+```
+
+
+
+## String
+
+```rust
+let mut s1 = String::from("hello");   String:  heap
+let s2 = "world";                     &str : static storage
+
+
+let s4 = format!("{s1}-{s2}");          拼接
+
+let s3 = s1 + s2;   // 第一个变量的所有权会移动到s3。
+```
+
+
+
+遍历
+
+```rust
+let mut s1 = String::from("范子阳");
+
+for i1 in s1.chars() {
+    print!("{} ", i1);  // 范  子 阳 
+}
+
+for i2 in s1.bytes(){
+    print!("{} ", i2);  // 232 140 131===229 173 144=== 233 152 179
+}
 ```
